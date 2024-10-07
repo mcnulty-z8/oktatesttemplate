@@ -1,31 +1,35 @@
-//amplify/auth/resource.ts
+import { useEffect, useState } from "react";
+import type { Schema } from "../amplify/data/resource";
+import { generateClient } from "aws-amplify/data";
 
-import { defineAuth, secret } from '@aws-amplify/backend';
-
-/**
- * Define and configure your auth resource
- * @see https://docs.amplify.aws/gen2/build-a-backend/auth
- */
-export const auth = defineAuth({
-  loginWith: {
-    email: true,
-    externalProviders: {
-      oidc: [
-        {
-          name: 'Okta',
-          clientId: secret('OKTA_CLIENT_ID'),
-          clientSecret: secret('OKTA_CLIENT_SECRET'),
-          issuerUrl: 'https://simpletech.oktapreview.com', // Correct Okta domain
-        },
-      ],
-      logoutUrls: [
-        'http://localhost:5173/', 
-        'https://main.dpgverupq1lfn.amplifyapp.com/'
-      ],
-      callbackUrls: [
-        'http://localhost:5173/profile',
-        'https://main.dpgverupq1lfn.amplifyapp.com/profile',
-      ],
-    },
-  },
-});
+const client = generateClient<Schema>();
+function App() {
+  const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
+  useEffect(() => {
+    client.models.Todo.observeQuery().subscribe({
+      next: (data) => setTodos([...data.items]),
+    });
+  }, []);
+  function createTodo() {
+    client.models.Todo.create({ content: window.prompt("Todo content") });
+  }
+  return (
+    <main>
+      <h1>My todos</h1>
+      <button onClick={createTodo}>+ new</button>
+      <ul>
+        {todos.map((todo) => (
+          <li key={todo.id}>{todo.content}</li>
+        ))}
+      </ul>
+      <div>
+        🥳 App successfully hosted. Try creating a new todo.
+        <br />
+        <a href="https://docs.amplify.aws/react/start/quickstart/#make-frontend-updates">
+          Review next step of this tutorial.
+        </a>
+      </div>
+    </main>
+  );
+}
+export default App;
