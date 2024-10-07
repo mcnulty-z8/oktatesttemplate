@@ -1,28 +1,27 @@
 import { useEffect, useState } from "react";
 import type { Schema } from "../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
-import { auth } from "../amplify/auth/resource";
 import { Auth } from "aws-amplify";
 
 const client = generateClient<Schema>();
 
 function App() {
   const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
-  const [isauthenticated, setIsauthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    auth.currentAuthenticatedUser()
-      .then(() => setIsauthenticated(true))
-      .catch(() => setIsauthenticated(false));
+    Auth.currentAuthenticatedUser()
+      .then(() => setIsAuthenticated(true))
+      .catch(() => setIsAuthenticated(false));
   }, []);
 
   useEffect(() => {
-    if (isauthenticated) {
+    if (isAuthenticated) {
       client.models.Todo.observeQuery().subscribe({
         next: (data) => setTodos([...data.items]),
       });
     }
-  }, [isauthenticated]);
+  }, [isAuthenticated]);
 
   function createTodo() {
     client.models.Todo.create({ content: window.prompt("Todo content") });
@@ -35,7 +34,7 @@ function App() {
   return (
     <main>
       <h1>My todos</h1>
-      {isauthenticated ? (
+      {isAuthenticated ? (
         <>
           <button onClick={createTodo}>+ new</button>
           <ul>
