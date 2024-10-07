@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { Schema } from "../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
 import { auth } from "../amplify/auth/resource";
+import { Auth } from "aws-amplify";
 
 const client = generateClient<Schema>();
 
@@ -10,7 +11,7 @@ function App() {
   const [isauthenticated, setIsauthenticated] = useState(false);
 
   useEffect(() => {
-    auth.currentauthenticatedUser()
+    auth.currentAuthenticatedUser()
       .then(() => setIsauthenticated(true))
       .catch(() => setIsauthenticated(false));
   }, []);
@@ -28,7 +29,7 @@ function App() {
   }
 
   function login() {
-    auth.federatedSignIn();
+    Auth.federatedSignIn();
   }
 
   return (
