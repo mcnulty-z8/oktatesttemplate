@@ -1,6 +1,6 @@
 //amplify/auth/resource.ts
 
-import { defineAuth } from '@aws-amplify/backend';
+import { defineAuth, secret } from '@aws-amplify/backend';
 
 /**
  * Define and configure your auth resource
@@ -13,8 +13,8 @@ export const auth = defineAuth({
       oidc: [
         {
           name: 'Okta',
-          clientId: '0oahln0iwgFaVZwJW1d7',
-          clientSecret: 'kikAigxnjLFHmUYCF_zFLCax2tjOpW2HT3opGvKWKDYpfLdlTTCmusDiK7CstfVi',
+          clientId: secret('OKTA_CLIENT_ID'),
+          clientSecret: secret('OKTA_CLIENT_SECRET'),
           issuerUrl: 'https://simpletech.oktapreview.com', // Correct Okta domain
         },
       ],
